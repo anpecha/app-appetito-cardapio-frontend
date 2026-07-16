@@ -1,0 +1,11 @@
+services:
+  cardapio-frontend:
+    container_name: appetito_cardapio_frontend
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_API_URL: http://cardapio:8003
+    ports:
+      - "3002:3000"
+    environment:
+      NODE_ENV: production
