@@ -10,6 +10,14 @@ export interface Restaurant {
     delivery_time?: string;
     working_hours?: string;
   };
+  primary_color?: string | null;
+  secondary_color?: string | null;
+  font_family?: string | null;
+  tagline?: string | null;
+  address?: string | null;
+  opening_hours?: Record<string, { open: string; close: string }>;
+  announcement?: string | null;
+  announcement_active?: boolean;
 }
 
 export interface Category {
