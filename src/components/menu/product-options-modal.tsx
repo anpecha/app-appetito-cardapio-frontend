@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import type { Product, ProductSize, ProductOptionGroup, ProductOption } from '@/lib/types';
 import { formatCurrencyBRL } from '@/lib/format';
 import { useCartStore } from '@/store/use-cart-store';
+import { useModalNav } from '@/hooks/use-modal-nav';
 import { X, Minus, Plus, Info } from 'lucide-react';
 
 interface Props {
@@ -19,6 +20,19 @@ export function ProductOptionsModal({ product, open, onClose }: Props) {
   const [selectedOptions, setSelectedOptions] = useState<Record<string, ProductOption[]>>({});
   const [quantity, setQuantity] = useState(1);
   const [notes, setNotes] = useState('');
+
+  useEffect(() => {
+    if (!open || !product) return;
+
+    // Preselecting the first size removes a needless tap and guarantees that
+    // products with mandatory sizes can be added on their first opening.
+    setSelectedSize(product.sizes[0] ?? null);
+    setSelectedOptions({});
+    setQuantity(1);
+    setNotes('');
+  }, [open, product]);
+
+  useModalNav(open && !!product, onClose);
 
   const hasSizes = (product?.sizes.length ?? 0) > 0;
 
@@ -73,29 +87,35 @@ export function ProductOptionsModal({ product, open, onClose }: Props) {
   };
 
   const handleClose = () => {
-    setSelectedSize(hasSizes && product?.sizes[0] ? product.sizes[0] : null);
-    setSelectedOptions({});
-    setQuantity(1);
-    setNotes('');
     onClose();
   };
 
   if (!open || !product) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
-      <div className="absolute inset-0 bg-black/50 animate-overlay-in" onClick={handleClose} />
-      <div className="relative bg-surface-card w-full max-w-lg max-h-[90dvh] rounded-t-3xl sm:rounded-2xl overflow-hidden shadow-xl animate-slide-up flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-xs animate-overlay-in" onClick={handleClose} />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="product-options-title"
+        className="relative bg-surface-card w-full max-w-lg max-h-[90dvh] rounded-t-3xl sm:rounded-2xl overflow-hidden shadow-2xl animate-slide-up flex flex-col z-10 border border-border-subtle"
+      >
+        {/* Mobile Drag Indicator */}
+        <div className="w-12 h-1.5 bg-border-default rounded-full mx-auto my-2 sm:hidden shrink-0" />
+
         {/* Header */}
-        <div className="sticky top-0 bg-surface-card/95 backdrop-blur-sm z-10 flex items-center justify-between px-5 py-4 border-b border-border-subtle">
-          <h2 className="text-lg font-bold text-text-primary font-display truncate pr-2">
+        <div className="sticky top-0 bg-surface-card/95 backdrop-blur-sm z-10 flex items-center justify-between px-5 py-3.5 border-b border-border-subtle">
+          <h2 id="product-options-title" className="text-base sm:text-lg font-bold text-text-primary font-display truncate pr-2">
             {product.name}
           </h2>
           <button
             onClick={handleClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full bg-surface-subtle hover:bg-surface-section transition-colors shrink-0"
+            className="w-8 h-8 flex items-center justify-center rounded-full bg-surface-subtle hover:bg-surface-section text-text-secondary transition-colors shrink-0"
+            title="Fechar (Esc)"
+            aria-label="Fechar"
           >
-            <X className="w-4 h-4 text-text-secondary" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
@@ -130,6 +150,8 @@ export function ProductOptionsModal({ product, open, onClose }: Props) {
                       <button
                         key={size.id}
                         onClick={() => setSelectedSize(size)}
+                        aria-pressed={isSelected}
+                        data-selected={isSelected}
                         className={`relative p-3 rounded-xl text-left transition-all duration-200 ${
                           isSelected
                             ? 'bg-action-primary/10 border-2 border-action-primary shadow-sm'

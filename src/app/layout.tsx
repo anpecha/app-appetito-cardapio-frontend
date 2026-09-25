@@ -35,14 +35,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <head>
-        <style>{`
-          :root {
-            --font-plus-jakarta: 'Plus Jakarta Sans', sans-serif;
-            --font-work-sans: 'Work Sans', sans-serif;
-          }
-        `}</style>
-      </head>
       <body className={`${inter.variable} font-sans antialiased`}>
         {children}
         <Script id="sw-register" strategy="afterInteractive">{`

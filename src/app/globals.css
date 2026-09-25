@@ -12,6 +12,8 @@
 
 @layer base {
   :root {
+    --font-plus-jakarta: 'Plus Jakarta Sans', sans-serif;
+    --font-work-sans: 'Work Sans', sans-serif;
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;

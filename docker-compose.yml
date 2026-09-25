@@ -4,8 +4,11 @@ services:
     build:
       context: .
       args:
-        NEXT_PUBLIC_API_URL: http://cardapio:8003
+        NEXT_PUBLIC_API_URL: http://host.docker.internal:8003
     ports:
       - "3002:3000"
     environment:
       NODE_ENV: production
+      BACKEND_API_URL: http://cardapio:8003
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

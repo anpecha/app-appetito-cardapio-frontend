@@ -20,6 +20,7 @@ export default function MenuPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const [modalProduct, setModalProduct] = useState<Product | null>(null);
   const [cartOpen, setCartOpen] = useState(false);
@@ -71,13 +72,23 @@ export default function MenuPage() {
 
   const isOpen = checkIsOpen(restaurant.opening_hours);
 
-  const filteredProducts = activeCategory
-    ? products.filter((p) => p.category_id === activeCategory)
-    : products;
+  const filteredProducts = products.filter((p) => {
+    const matchesCategory = activeCategory ? p.category_id === activeCategory : true;
+    const matchesSearch = searchQuery.trim()
+      ? p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase()))
+      : true;
+    return matchesCategory && matchesSearch;
+  });
 
   return (
     <div className="min-h-[100dvh] bg-surface-page pb-24">
-      <RestaurantHeader restaurant={restaurant} isOpen={isOpen} />
+      <RestaurantHeader
+        restaurant={restaurant}
+        isOpen={isOpen}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+      />
 
       {restaurant.announcement && restaurant.announcement_active && (
         <div className="bg-action-primary-subtle border-b border-action-primary/20">
@@ -100,13 +111,35 @@ export default function MenuPage() {
       </div>
 
       <main className="max-w-2xl mx-auto">
+        {searchQuery.trim() && (
+          <div className="px-4 pt-3 flex items-center justify-between">
+            <span className="text-xs text-text-secondary font-medium">
+              Buscando por &ldquo;<strong className="text-text-primary">{searchQuery}</strong>&rdquo; ({filteredProducts.length} {filteredProducts.length === 1 ? 'item' : 'itens'})
+            </span>
+            <button
+              onClick={() => setSearchQuery('')}
+              className="text-xs font-bold text-amber-700 hover:underline"
+            >
+              Limpar busca
+            </button>
+          </div>
+        )}
+
         <div className="px-4 space-y-3 pt-4">
           {filteredProducts.map((product) => (
             <ProductCard key={product.id} product={product} onRequestCustomize={setModalProduct} />
           ))}
           {filteredProducts.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-text-muted text-sm">Nenhum produto nesta categoria.</p>
+            <div className="text-center py-12 bg-surface-card rounded-2xl border border-border-subtle my-4">
+              <p className="text-text-muted text-sm font-medium">Nenhum produto encontrado.</p>
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="mt-2 text-xs font-bold text-amber-600 hover:underline"
+                >
+                  Limpar busca e ver todos
+                </button>
+              )}
             </div>
           )}
         </div>

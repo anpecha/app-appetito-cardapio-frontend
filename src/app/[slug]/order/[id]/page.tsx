@@ -95,12 +95,19 @@ export default function OrderPage() {
   return (
     <div className="min-h-[100dvh] bg-surface-page pb-12">
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-surface-card/95 backdrop-blur-sm border-b border-border-subtle">
-        <div className="max-w-lg mx-auto flex items-center gap-3 px-4 h-14">
-          <Link href={`/${slug}`} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-subtle transition-colors">
-            <ArrowLeft className="w-5 h-5 text-text-primary" />
+      <div className="sticky top-0 z-20 bg-surface-card/95 backdrop-blur-sm border-b border-border-subtle shadow-xs">
+        <div className="max-w-lg mx-auto flex items-center justify-between px-4 h-14">
+          <Link
+            href={`/${slug}`}
+            className="flex items-center gap-1.5 py-1.5 px-3 rounded-full bg-surface-subtle hover:bg-surface-section text-text-primary text-xs font-bold transition-colors"
+            title="Voltar para o cardápio"
+          >
+            <ArrowLeft className="w-4 h-4 text-amber-600" />
+            <span>Voltar ao Cardápio</span>
           </Link>
-          <h1 className="text-lg font-bold text-text-primary font-display">Acompanhar Pedido</h1>
+          <h1 className="text-base sm:text-lg font-extrabold text-text-primary font-display">
+            Acompanhar Pedido
+          </h1>
         </div>
       </div>
 
